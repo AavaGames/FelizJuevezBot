@@ -16,6 +16,12 @@ for(const file of commandFiles)
 
 const prefix = '-';
 
+//Post image on join
+//Create help command
+client.on("ready", (message) => {
+    checkTime();
+});
+
 client.on('message', (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     
@@ -23,6 +29,7 @@ client.on('message', (message) => {
     const commandText = args.shift().toLowerCase();
 
     const command = client.commands.get(commandText);
+
     if (command != null)
     {
         command.execute(message, args);
@@ -30,3 +37,43 @@ client.on('message', (message) => {
 });
 
 client.login(process.env.TOKEN);
+
+//
+
+const checkTime = async ()=> 
+{
+    // 10 minutes
+    const timeOut = 60 * 10;
+
+    const date = new Date();
+    const day = date.getDay();
+    const currentDay = date.getMonth() + '-' + date.getDate();
+    const hour = date.getHours();
+    const saved = JSON.parse(fs.readFileSync('saved.json'));
+
+    // day check
+    if (saved.lastDayPosted != currentDay)
+    {
+        console.log("can post today");
+        // hour check
+        if (hour > 11)
+        {
+            console.log("posting now");
+
+            saved.lastDayPosted = currentDay;
+            fs.writeFileSync('saved.json', JSON.stringify(saved));
+            
+            // Post Image(s)
+            /*
+                Struct 
+                    Day x 7
+                        Holds an array of links 
+            */
+        }
+    }
+    else
+        console.log("posted for the day");
+
+    setTimeout(checkTime, 1000 * 5)
+    //setTimeout(checkTime, 1000 * timeOut)
+}

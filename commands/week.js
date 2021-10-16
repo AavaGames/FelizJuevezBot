@@ -1,22 +1,12 @@
+//const fs = require('fs');
+
 module.exports = {
-    init: (client) => {
-        const checkTime = async ()=> 
-        {
-            const query = {
-                date: {
-                    $lte: Date.now()
-                }
-            }
-
-            const 
-
-            // 10 minutes
-            setTimeout(checkTime, 1000 * 60 * 10)
-        }
-    },
+    name: 'week',
     description: 'ping command',
     execute(message, args)
     {
-        message.channel.send('its not juevez');
+        let date = new Date();
+        date = date.getHours();
+        message.channel.send('' + date);
     }
 }
