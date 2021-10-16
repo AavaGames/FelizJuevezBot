@@ -13,11 +13,12 @@ module.exports = { checkTime };
 */
 const hourToBeGreater = 12
 const minToBeGreater = 5
+// TODO can randomize the time range which bot posts (between 12-8pm)
 
 async function checkTime (client) 
 {
     // 10 minutes
-    const timeOutTime = 60 * 10;
+    const timeOutTime = 60 * 5;
 
     const date = new Date();
     const day = date.getDay();
@@ -25,6 +26,8 @@ async function checkTime (client)
     const hour = date.getHours();
     const min = date.getMinutes();
     const saved = JSON.parse(fs.readFileSync('saved.json'));
+
+    console.log("checking post time at " + hour + ":" + min);
 
     let posted = false;
     saved.servers.forEach(server => {
@@ -57,20 +60,22 @@ async function checkTime (client)
                 }
                 else
                 {
-                    console.log("posting for day " + day);
+                    //console.log("posting for day " + day);
                     showTodaysImage(client, server, day);
                 }
             }
         }
         else
-            console.log("already posted for the day");
+        {
+            //console.log("already posted for the day");
+        }
     });
     
     if (posted)
         fs.writeFileSync('saved.json', JSON.stringify(saved));
 
     console.log('checking again in ' + timeOutTime/60 + ' minutes');
-    setTimeout(checkTime, 1000 * timeOutTime)
+    setTimeout(function() { checkTime(client) } , 1000 * timeOutTime)
 }
 
 function showTodaysImage(client, server, day)
