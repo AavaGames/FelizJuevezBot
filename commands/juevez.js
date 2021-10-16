@@ -3,14 +3,13 @@ module.exports = {
     description: 'Is it juevez?',
     execute(message, args)
     {
-        const day = 4;//new Date().getDay();
-        if (day == 4)
+        if (new Date().getDay() == 4)
         {
             message.channel.send('🇫 🇪 🇱 🇮 🇿     🇯 🇺 🇪 🇻 🇪 🇸');
         }
         else
         {
-            message.channel.send('its not juevez :(');
+            message.channel.send('it\'s not juevez :(');
         }
     }
 }

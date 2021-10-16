@@ -1,8 +1,11 @@
-//https://discord.com/oauth2/authorize?client_id=898762351732457492&scope=bot&permissions=67624000
+//Ever since I been with Asuka, anything feels possible.
+
+//https://discord.com/oauth2/authorize?client_id=898762351732457492&scope=bot&permissions=2215107648
 
 const Discord = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
 
 const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES']});
 
@@ -14,13 +17,56 @@ for(const file of commandFiles)
     client.commands.set(command.name, command);
 }
 
+const functions = require(path.join(__dirname, 'functions.js'));
+
 const prefix = '-';
 
 //Post image on join
 //Create help command
-client.on("ready", (message) => {
-    checkTime();
+
+const savedTemplate = {
+    channelID: "",
+    lastDayPosted: ""
+}
+
+client.on('guildCreate', member => {
+    const welcomeText = "**Feliz Juevez?**\n\nUse *-help* to see all commands. Setup requires *-channel* to be sent in the desired location for where this bot should post."
+
+    foundChannel = false;
+    //finds first text channel
+    client.channels.cache.forEach(c => {
+        if (!foundChannel && c.type === 'GUILD_TEXT')
+        {
+            foundChannel = true;
+            let channel = client.channels.cache.get(c.id);
+            channel.send(welcomeText);
+        }
+    }) 
 });
+
+client.on("ready", client => {
+    if (!fs.existsSync('saved.json'))
+    {
+        console.log('Creating saved JSON file');
+        const jsonTemplate = JSON.stringify(savedTemplate);
+        fs.writeFileSync('saved.json', jsonTemplate);
+    }
+
+    if (JSON.parse(fs.readFileSync('saved.json')).channelID.length == 0)
+    {
+        foundChannel = false;
+        client.channels.cache.forEach(c => {
+            if (!foundChannel && c.type === 'GUILD_TEXT')
+            {
+                foundChannel = true;
+                let channel = client.channels.cache.get(c.id);
+                channel.send("I require a *-channel* to do my work in.");
+            }
+        })
+    }
+
+    functions.checkTime(client);
+})
 
 client.on('message', (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -34,46 +80,11 @@ client.on('message', (message) => {
     {
         command.execute(message, args);
     }
+    if (commandText == "checktime")
+    {
+        console.log('checking time through command');
+        functions.checkTime(client);
+    }
 });
 
 client.login(process.env.TOKEN);
-
-//
-
-const checkTime = async ()=> 
-{
-    // 10 minutes
-    const timeOut = 60 * 10;
-
-    const date = new Date();
-    const day = date.getDay();
-    const currentDay = date.getMonth() + '-' + date.getDate();
-    const hour = date.getHours();
-    const saved = JSON.parse(fs.readFileSync('saved.json'));
-
-    // day check
-    if (saved.lastDayPosted != currentDay)
-    {
-        console.log("can post today");
-        // hour check
-        if (hour > 11)
-        {
-            console.log("posting now");
-
-            saved.lastDayPosted = currentDay;
-            fs.writeFileSync('saved.json', JSON.stringify(saved));
-            
-            // Post Image(s)
-            /*
-                Struct 
-                    Day x 7
-                        Holds an array of links 
-            */
-        }
-    }
-    else
-        console.log("posted for the day");
-
-    setTimeout(checkTime, 1000 * 5)
-    //setTimeout(checkTime, 1000 * timeOut)
-}

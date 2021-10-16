@@ -1,4 +1,6 @@
 const fs = require('fs');
+const path = require('path');
+const functions = require(path.join(__dirname, '../functions.js'));
 
 module.exports = {
     name: 'channel',
@@ -7,12 +9,16 @@ module.exports = {
     {
         const saved = JSON.parse(fs.readFileSync('saved.json'));
         
-        if (saved.channel != message.channel)
+        if (saved.channelID != message.channel.id)
         {
-            saved.channel = message.channel;
+            saved.channelID = message.channel.id;
             fs.writeFileSync('saved.json', JSON.stringify(saved));
-        }
 
-        message.channel.send('Updated channel to this one');
+            message.channel.send('Updated channel to this one');
+        }
+        else
+        {
+            message.channel.send('Already posting to this channel');
+        } 
     }
 }
