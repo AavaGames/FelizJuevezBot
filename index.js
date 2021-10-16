@@ -25,16 +25,26 @@ const prefix = '-';
 //Create help command
 
 const savedTemplate = {
-    channelID: "",
-    lastDayPosted: ""
+    servers: []
+}
+const serverTemplate = {
+    guildID: '',
+    channelID: '', 
+    lastDayPosted: ''
 }
 
-client.on('guildCreate', member => {
+client.on('guildCreate', guild => {
+
+    let saved = JSON.parse(fs.readFileSync('saved.json'));
+    saved.servers.push(serverTemplate);
+    saved.servers[saved.servers.length-1].guildID = guild.id;
+    fs.writeFileSync('saved.json', JSON.stringify(saved));
+
     const welcomeText = "**Feliz Juevez?**\n\nUse *-help* to see all commands. Setup requires *-channel* to be sent in the desired location for where this bot should post."
 
     foundChannel = false;
-    //finds first text channel
-    client.channels.cache.forEach(c => {
+    //finds first text channel in server
+    guild.channels.cache.forEach(c => {
         if (!foundChannel && c.type === 'GUILD_TEXT')
         {
             foundChannel = true;
@@ -45,6 +55,7 @@ client.on('guildCreate', member => {
 });
 
 client.on("ready", client => {
+    console.log("\nF E L I Z  J U E V E Z  B O T")
     if (!fs.existsSync('saved.json'))
     {
         console.log('Creating saved JSON file');
@@ -52,18 +63,19 @@ client.on("ready", client => {
         fs.writeFileSync('saved.json', jsonTemplate);
     }
 
-    if (JSON.parse(fs.readFileSync('saved.json')).channelID.length == 0)
-    {
-        foundChannel = false;
-        client.channels.cache.forEach(c => {
-            if (!foundChannel && c.type === 'GUILD_TEXT')
-            {
-                foundChannel = true;
-                let channel = client.channels.cache.get(c.id);
-                channel.send("I require a *-channel* to do my work in.");
-            }
-        })
-    }
+    // if (JSON.parse(fs.readFileSync('saved.json')).servers.channelID.length == 0)
+    // {
+    //     foundChannel = false;
+    //     client.channels.cache.forEach(c => {
+    //         if (!foundChannel && c.type === 'GUILD_TEXT')
+    //         {
+    //             foundChannel = true;
+    //             let channel = client.channels.cache.get(c.id);
+    //             console.log(channel);
+    //             channel.send("I require a *-channel* to do my work in.");
+    //         }
+    //     })
+    // }
 
     functions.checkTime(client);
 })

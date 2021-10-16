@@ -4,6 +4,16 @@ const postPaths = require(path.join(__dirname, '/postPaths.js'));
 
 module.exports = { checkTime };
 
+/*
+    Example
+        hourToBeGreater = 15
+        minToBeGreater = 35
+
+        Post will occur after 3:35 PM
+*/
+const hourToBeGreater = 12
+const minToBeGreater = 5
+
 async function checkTime (client) 
 {
     // 10 minutes
@@ -13,39 +23,59 @@ async function checkTime (client)
     const day = date.getDay();
     const currentDay = date.getMonth() + '-' + date.getDate();
     const hour = date.getHours();
+    const min = date.getMinutes();
     const saved = JSON.parse(fs.readFileSync('saved.json'));
 
-    // day check
-    if (saved.lastDayPosted != currentDay)
-    {
-        // hour check
-        if (hour > 11)
+    let posted = false;
+    saved.servers.forEach(server => {
+        // day check
+        if (server.lastDayPosted != currentDay)
         {
-            if (saved.channelID == "")
+            // time check
+            if ((hour == hourToBeGreater && min >= minToBeGreater) || hour > hourToBeGreater)
             {
-                console.log("Error: Specify a channel with the -channel command.");
-            }
-            else
-            {
-                console.log("posting for day " + day);
+                posted = true;
+                server.lastDayPosted = currentDay;
 
-                saved.lastDayPosted = currentDay;
-                fs.writeFileSync('saved.json', JSON.stringify(saved));
-
-                showTodaysImage(client, saved, day);
+                if (server.channelID == "")
+                {
+                    // msg server to add channel
+                    client.guilds.cache.forEach(g => {
+                        if (g.id == server.guildID)
+                        {
+                            foundChannel = false;
+                            g.channels.cache.forEach(c => {
+                                if (!foundChannel && c.type === 'GUILD_TEXT')
+                                {
+                                    foundChannel = true;
+                                    let channel = client.channels.cache.get(c.id);
+                                    channel.send('Missing designated channel, please type -channel in the appropriate location. Type -reset after to recieve images today.');
+                                }
+                            });
+                        }
+                    });
+                }
+                else
+                {
+                    console.log("posting for day " + day);
+                    showTodaysImage(client, server, day);
+                }
             }
         }
-    }
-    else
-        console.log("posted for the day");
+        else
+            console.log("already posted for the day");
+    });
+    
+    if (posted)
+        fs.writeFileSync('saved.json', JSON.stringify(saved));
 
     console.log('checking again in ' + timeOutTime/60 + ' minutes');
     setTimeout(checkTime, 1000 * timeOutTime)
 }
 
-function showTodaysImage(client, saved, day)
+function showTodaysImage(client, server, day)
 {
-    const channel = client.channels.cache.get(saved.channelID);
+    const channel = client.channels.cache.get(server.channelID);
 
     let allPaths;
     let allText;

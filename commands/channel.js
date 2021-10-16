@@ -9,16 +9,44 @@ module.exports = {
     {
         const saved = JSON.parse(fs.readFileSync('saved.json'));
         
-        if (saved.channelID != message.channel.id)
+        let foundServer = false;
+
+        saved.servers.forEach(server => {
+            if (server.guildID == message.guild.id)
+            {
+                foundServer = true;
+                if (server.channelID != message.channel.id)
+                {
+                    server.channelID = message.channel.id;
+                    fs.writeFileSync('saved.json', JSON.stringify(saved));
+        
+                    message.channel.send('Updated channel to this one.');
+                }
+                else
+                {
+                    message.channel.send('Already posting to this channel.');
+                } 
+            }
+        });
+
+        if (!foundServer)
         {
-            saved.channelID = message.channel.id;
+            // make function
+            let saved = JSON.parse(fs.readFileSync('saved.json'));
+            saved.servers.push(serverTemplate);
+            saved.servers[saved.servers.length-1].guildID = message.guild.id;
             fs.writeFileSync('saved.json', JSON.stringify(saved));
 
-            message.channel.send('Updated channel to this one');
+            message.channel.send('Server added to database.');
+        
+            this.execute(message, args);
         }
-        else
-        {
-            message.channel.send('Already posting to this channel');
-        } 
+        
     }
+}
+
+const serverTemplate = {
+    guildID: '',
+    channelID: '', 
+    lastDayPosted: ''
 }
