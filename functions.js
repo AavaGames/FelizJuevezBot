@@ -60,14 +60,14 @@ async function checkTime (client)
                 }
                 else
                 {
-                    //console.log("posting for day " + day);
+                    console.log("posting for day " + day);
                     showTodaysImage(client, server, day);
                 }
             }
         }
         else
         {
-            //console.log("already posted for the day");
+            console.log("already posted for the day");
         }
     });
     
@@ -82,11 +82,15 @@ function showTodaysImage(client, server, day)
 {
     const channel = client.channels.cache.get(server.channelID);
 
-    let allPaths;
-    let allText;
+    let allPaths = [];
+    let allText = [];
 
     switch (day)
     {
+        case 0:
+            allText = postPaths.sunday.text;
+            allPaths = postPaths.sunday.paths;
+            break;
         case 1:
             allText = postPaths.monday.text;
             allPaths = postPaths.monday.paths;
@@ -111,21 +115,18 @@ function showTodaysImage(client, server, day)
             allText = postPaths.saturday.text;
             allPaths = postPaths.saturday.paths;
             break;
-        case 7:
-            allText = postPaths.sunday.text;
-            allPaths = postPaths.sunday.paths;
-            break;
     }
 
+    console.log(allText);
     console.log(allPaths);
 
     allText.forEach(text => {
-        channel.send(text);
+        if (text != "")
+            channel.send(text);
     });
-
+    
     allPaths.forEach(thePath => {
-        channel.send({
-            files: [thePath]
-        });
+        if (thePath != "")
+            channel.send({ files: [thePath] });
     });
 }

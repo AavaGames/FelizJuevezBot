@@ -6,6 +6,7 @@ const Discord = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const postPaths = require(path.join(__dirname, '/postPaths.js'));
 
 const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES']});
 
@@ -21,8 +22,6 @@ const functions = require(path.join(__dirname, 'functions.js'));
 
 const prefix = '-';
 
-//Post image on join
-//Create help command
 
 const savedTemplate = {
     servers: []
@@ -40,7 +39,7 @@ client.on('guildCreate', guild => {
     saved.servers[saved.servers.length-1].guildID = guild.id;
     fs.writeFileSync('saved.json', JSON.stringify(saved));
 
-    const welcomeText = "**Feliz Juevez?**\n\nUse *-help* to see all commands. Setup requires *-channel* to be sent in the desired location for where this bot should post."
+    const welcomeText = "Use *-help* to see all commands. Setup requires *-channel* to be sent in the desired location for where this bot should post."
 
     foundChannel = false;
     //finds first text channel in server
@@ -49,9 +48,32 @@ client.on('guildCreate', guild => {
         {
             foundChannel = true;
             let channel = client.channels.cache.get(c.id);
-            channel.send(welcomeText);
+            channel.send({
+                files: [postPaths.joinImage]
+            });
+            channel.send(welcomeText); 
         }
     }) 
+});
+
+client.on("guildDelete", guild => {
+
+    let saved = JSON.parse(fs.readFileSync('saved.json'));
+
+    let i = 0;
+    let foundServer = false;
+    saved.servers.forEach(server => {
+        if (server.guildID == guild.id)
+            foundServer = true;
+        else if (!foundServer)
+            i++;
+    });
+
+    saved.servers.splice(i, 1);
+
+    fs.writeFileSync('saved.json', JSON.stringify(saved));
+
+    console.log('leaving guild & removing from saved list');
 });
 
 client.on("ready", client => {

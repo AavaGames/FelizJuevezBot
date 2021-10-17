@@ -1,22 +1,25 @@
 module.exports = {
+    joinImage: "images/joinedServer.jpg",
+
     monday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/monday.png",
+            "images/week/monday.gif",
         ]
     },
         
     tuesday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/tuesday.png",
+            "images/week/tuesday.gif",
         ]
     },
 
     wednesday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/wednesday.png",
+            "images/week/wednesday.gif",
+            "images/week/misato_wednesday.gif"
         ]
     },
 
@@ -26,7 +29,7 @@ module.exports = {
             '🇫 🇪 🇱 🇮 🇿     🇯 🇺 🇪 🇻 🇪 🇸'
         ],
         paths: [
-            "images/week/thursday.png",
+            "images/week/thursday.gif",
             "images/feliz_juevez.mp4",
             "images/feliz_jueves_week.mp4",
             "images/KanyeBeJuevez.mp4",
@@ -35,23 +38,23 @@ module.exports = {
     },
 
     friday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/friday.png",
+            "images/week/friday.gif",
         ]
     },
 
     saturday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/saturday.png",
+            "images/week/saturday.gif",
         ]
     },
 
     sunday: {
-        text: [],
+        text: [ "" ],
         paths: [
-            "images/week/sunday.png",
+            "images/week/sunday.gif",
         ]
     }
 }
