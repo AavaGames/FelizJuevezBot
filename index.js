@@ -1,7 +1,5 @@
 //Ever since I been with Asuka, anything feels possible.
 
-//https://discord.com/oauth2/authorize?client_id=898762351732457492&scope=bot&permissions=2215107648
-
 const Discord = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
@@ -42,6 +40,8 @@ client.on('guildCreate', guild => {
     const welcomeText = "Use *-help* to see all commands. Setup requires *-channel* to be sent in the desired location for where this bot should post."
 
     foundChannel = false;
+    //TODO update this to prioritise announcment channels, and then channels that the bot can type in
+
     //finds first text channel in server
     guild.channels.cache.forEach(c => {
         if (!foundChannel && c.type === 'GUILD_TEXT')
@@ -57,9 +57,8 @@ client.on('guildCreate', guild => {
 });
 
 client.on("guildDelete", guild => {
-
+    //Not run when bot is offline
     let saved = JSON.parse(fs.readFileSync('saved.json'));
-
     let i = 0;
     let foundServer = false;
     saved.servers.forEach(server => {
@@ -68,36 +67,19 @@ client.on("guildDelete", guild => {
         else if (!foundServer)
             i++;
     });
-
     saved.servers.splice(i, 1);
-
     fs.writeFileSync('saved.json', JSON.stringify(saved));
-
     console.log('leaving guild & removing from saved list');
 });
 
 client.on("ready", client => {
-    console.log("\nF E L I Z  J U E V E Z  B O T")
+    console.log("\nF E L I Z  J U E V E Z  B O T\n")
     if (!fs.existsSync('saved.json'))
     {
         console.log('Creating saved JSON file');
         const jsonTemplate = JSON.stringify(savedTemplate);
         fs.writeFileSync('saved.json', jsonTemplate);
     }
-
-    // if (JSON.parse(fs.readFileSync('saved.json')).servers.channelID.length == 0)
-    // {
-    //     foundChannel = false;
-    //     client.channels.cache.forEach(c => {
-    //         if (!foundChannel && c.type === 'GUILD_TEXT')
-    //         {
-    //             foundChannel = true;
-    //             let channel = client.channels.cache.get(c.id);
-    //             console.log(channel);
-    //             channel.send("I require a *-channel* to do my work in.");
-    //         }
-    //     })
-    // }
 
     functions.checkTime(client);
 })
@@ -110,14 +92,14 @@ client.on('message', (message) => {
 
     const command = client.commands.get(commandText);
 
-    if (command != null)
-    {
-        command.execute(message, args);
-    }
     if (commandText == "checktime")
     {
         console.log('checking time through command');
         functions.checkTime(client);
+    }
+    else if (command != null)
+    {
+        command.execute(message, args);
     }
 });
 

@@ -1,2 +1,2 @@
-cd \d D:\Web\FelizJuevezBot
+cd /d D:\Web\FelizJuevezBot
 node .
