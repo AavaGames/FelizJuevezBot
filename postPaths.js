@@ -54,6 +54,7 @@ module.exports = {
     sunday: {
         text: [ "" ],
         paths: [
+            "holo_sunday.png",
             "images/week/sunday.gif",
         ]
     }
