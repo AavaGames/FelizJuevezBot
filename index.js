@@ -1,11 +1,7 @@
 //Ever since I been with Asuka, anything feels possible.
 
 require('dotenv').config();
-//.evn consists of
-//TOKEN=
-//TEST_TOKEN=
-//INV_URL=
-//TEST=false
+
 
 const fs = require('fs');
 const path = require('path');
@@ -39,6 +35,7 @@ client.on('guildCreate', guild => {
     foundChannel = false;
 
     //TODO update this to prioritise announcment channels, and then channels that the bot can type in
+    
     //finds first text channel in server
     guild.channels.cache.forEach(c => {
         if (!foundChannel && c.type === 'GUILD_TEXT')

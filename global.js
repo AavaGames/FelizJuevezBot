@@ -16,16 +16,14 @@ const serverTemplate = {
 const saveJSON = "saved.json";
 const saveJSONTest = "savedTest.json"
 
+//#region Tweak to Preference
+
+//Time between checking whether to post again. 
+//noPostsTimeout serves to separate between server posting to diminish overwhelming the discord sending
 const noPostsTimeout = 60 * 10;
 const postTimeout = 30;
 
-/*
-    Example
-        hourToBeGreater = 15
-        minToBeGreater = 35
-
-        Post will occur after 3:35 PM
-*/
+//Time range when to post, randomized each day
 const hourTimeRange = {
     min: 12,
     max: 17
@@ -35,7 +33,7 @@ const minRange = {
     max: 60
 }
 
-const randomRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+//#endregion
 
 module.exports = {  
     GetTimeout,
@@ -57,6 +55,8 @@ function GetTimeout(posted)
     else 
         return noPostsTimeout;
 }
+
+const randomRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
 function RandomizePostTime(currentDay)
 {

@@ -5,8 +5,6 @@ const global = require(path.join(__dirname, '/global.js'));
 
 module.exports = { checkTime };
 
-// TODO can randomize the time range which bot posts (between 12-8pm)
-
 async function checkTime (client) 
 {
     const date = new Date();
