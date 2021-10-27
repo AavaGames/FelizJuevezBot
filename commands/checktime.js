@@ -8,5 +8,6 @@ module.exports = {
     {
         console.log('checking time through command');
         functions.checkTime(global.discordClient);
+        global.Message(message.channel, "Checked post time.");
     }
 }
