@@ -1,3 +1,6 @@
+const path = require('path');
+const global = require(path.join(__dirname, '../global.js'));
+
 module.exports = {
     name: 'juevez',
     description: 'Is it juevez?',
@@ -5,11 +8,11 @@ module.exports = {
     {
         if (new Date().getDay() == 4)
         {
-            message.channel.send('🇫 🇪 🇱 🇮 🇿     🇯 🇺 🇪 🇻 🇪 🇸');
+            global.Message(message.channel, '🇫 🇪 🇱 🇮 🇿     🇯 🇺 🇪 🇻 🇪 🇸');
         }
         else
         {
-            message.channel.send('it\'s not juevez :(');
+            global.Message(message.channel, 'it\'s not juevez :(');
         }
     }
 }

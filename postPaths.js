@@ -1,6 +1,7 @@
 module.exports = {
     joinImage: "images/joinedServer.jpg",
-
+    birthdayImage: "images/asuka_bday.png",
+    
     monday: {
         text: [ "" ],
         paths: [

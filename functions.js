@@ -1,96 +1,100 @@
 const fs = require('fs');
 const path = require('path');
 const postPaths = require(path.join(__dirname, '/postPaths.js'));
+const global = require(path.join(__dirname, '/global.js'));
 
 module.exports = { checkTime };
 
-/*
-    Example
-        hourToBeGreater = 15
-        minToBeGreater = 35
-
-        Post will occur after 3:35 PM
-*/
-const hourToBeGreater = 12
-const minToBeGreater = 5
 // TODO can randomize the time range which bot posts (between 12-8pm)
 
 async function checkTime (client) 
 {
-    const timeOutTime = 60 * 5; // 10 minutes
-
     const date = new Date();
     const day = date.getDay();
     const hour = date.getHours();
     const min = date.getMinutes();
     const currentDay = date.getMonth() + '-' + date.getDate();
 
-    const saved = JSON.parse(fs.readFileSync('saved.json'));
+    const saved = global.ReadSaveFile();
 
     console.log("checking post time at " + hour + ":" + min);
 
     let shouldSave = false;
+
+    let posted = false;
     saved.servers.forEach(server => {
-        let posted = false;
-        // day check
-        if (server.lastDayPosted != currentDay)
+        if (!posted)
         {
-            // time check
-            if (hour > hourToBeGreater || (hour == hourToBeGreater && min >= minToBeGreater))
+            // day check
+            if (server.lastDayPosted != currentDay)
             {
-                if (server.channelID == "")
+                timeToPost = global.GetTimeToPost();
+                // time check
+                if (hour > timeToPost.hour || (hour == timeToPost.hour && min >= timeToPost.min))
                 {
-                    // msg server to add channel
-                    client.guilds.cache.forEach(g => {
-                        if (g.id == server.guildID)
+                    if (server.channelID == "")
+                    {
+                        // SERVER HAS NO CHANNEL - msg server to add channel
+                        client.guilds.cache.forEach(g => {
+                            if (g.id == server.guildID)
+                            {
+                                foundChannel = false;
+                                g.channels.cache.forEach(c => {
+                                    if (!foundChannel && c.type === 'GUILD_TEXT')
+                                    {
+                                        posted = true;
+                                        foundChannel = true;
+                                        let channel = client.channels.cache.get(c.id);
+                                        if (channel != undefined)
+                                        {
+                                            global.Message(channel, 'Missing designated channel, please type -channel in the appropriate location. Type -reset after to recieve images today.');
+                                        }
+                                        else
+                                        {
+                                            console.log("failed to get channel of guild = " + server.guildID + " to notify of lack of saved channelID");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        console.log("posting for day " + day);
+                        posted = showTodaysImage(client, server, day);
+                        if (posted)
                         {
-                            foundChannel = false;
-                            g.channels.cache.forEach(c => {
-                                if (!foundChannel && c.type === 'GUILD_TEXT')
-                                {
-                                    posted = true;
-                                    foundChannel = true;
-                                    let channel = client.channels.cache.get(c.id);
-                                    if (channel != undefined)
-                                    {
-                                        channel.send('Missing designated channel, please type -channel in the appropriate location. Type -reset after to recieve images today.');
-                                    }
-                                    else
-                                    {
-                                        console.log("failed to get channel of guild = " + server.guildID + " to notify of lack of saved channelID");
-                                    }
-                                }
-                            });
+                            server.lastDayPosted = currentDay;
+                            shouldSave = true;
                         }
-                    });
+                    }
                 }
                 else
                 {
-                    console.log("posting for day " + day);
-                    posted = showTodaysImage(client, server, day);
+                    console.log("can't post yet");
                 }
             }
-        }
-        else
-        {
-            console.log("already posted for the day");
-        }
-
-        if (posted)
-        {
-            server.lastDayPosted = currentDay;
-            shouldSave = true;
+            else
+            {
+                console.log("already posted for the day");
+            }
         }   
     });
     
     if (shouldSave)
     {
-        console.log("saving post dates");
-        fs.writeFileSync('saved.json', JSON.stringify(saved));
+        console.log("saving post date");
+        global.WriteSaveFile(saved);
     }
 
-    console.log('checking again in ' + timeOutTime/60 + ' minutes');
-    setTimeout(function() { checkTime(client) } , 1000 * timeOutTime)
+    timeout = global.GetTimeout(posted);
+    prefix = "";
+    if (posted)
+        prefix = 'posted to a server';
+    else
+        prefix = 'no posts';
+    console.log(prefix + ', checking in ' + timeout + ' seconds');
+    setTimeout(function() { checkTime(client) } , 1000 * timeout);
 }
 
 function showTodaysImage(client, server, day)
@@ -133,17 +137,19 @@ function showTodaysImage(client, server, day)
                 break;
         }
     
+        console.log('text')
         console.log(allText);
+        console.log('paths');
         console.log(allPaths);
     
         allText.forEach(text => {
             if (text != "")
-                channel.send(text);
+                global.Message(channel, text);
         });
         
         allPaths.forEach(thePath => {
             if (thePath != "")
-                channel.send({ files: [thePath] });
+                global.Message(channel, { files: [thePath] });
         });
     
         return true;

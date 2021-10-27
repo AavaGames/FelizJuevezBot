@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-const functions = require(path.join(__dirname, '../functions.js'));
+const global = require(path.join(__dirname, '../global.js'));
 
 module.exports = {
     name: 'channel',
     description: 'Set channel',
     execute(message, args)
     {
-        const saved = JSON.parse(fs.readFileSync('saved.json'));
+        const saved = global.ReadSaveFile();
         
         let foundServer = false;
 
@@ -18,35 +18,27 @@ module.exports = {
                 if (server.channelID != message.channel.id)
                 {
                     server.channelID = message.channel.id;
-                    fs.writeFileSync('saved.json', JSON.stringify(saved));
+                    global.ReadSaveFile();
         
-                    message.channel.send('Updated channel to this one.');
+                    global.Message(message.channel, 'Updated channel to this one.');
+                    global.WriteSaveFile(saved);
                 }
                 else
                 {
-                    message.channel.send('Already posting to this channel.');
+                    global.Message(message.channel, 'Already posting to this channel.');
                 } 
             }
         });
 
         if (!foundServer)
         {
-            // make function
-            let saved = JSON.parse(fs.readFileSync('saved.json'));
-            saved.servers.push(serverTemplate);
+            saved.servers.push(global.GetServerTemplate());
             saved.servers[saved.servers.length-1].guildID = message.guild.id;
-            fs.writeFileSync('saved.json', JSON.stringify(saved));
+            global.WriteSaveFile(saved);
 
-            message.channel.send('Server added to database.');
+            global.Message(message.channel, 'Server added to database.');
         
             this.execute(message, args);
         }
-        
     }
-}
-
-const serverTemplate = {
-    guildID: '',
-    channelID: '', 
-    lastDayPosted: ''
 }
