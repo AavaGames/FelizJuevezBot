@@ -4,6 +4,7 @@ const fs = require('fs');
 discordClient = undefined;
 
 const savedTemplate = {
+    timeToPost: { hour: 0, min: 0, day: ""},
     servers: []
 }
 const serverTemplate = {
@@ -25,11 +26,20 @@ const postTimeout = 30;
 
         Post will occur after 3:35 PM
 */
-const hourToBeGreater = 12;
-const minToBeGreater = 5;
+const hourTimeRange = {
+    min: 12,
+    max: 17
+}
+const minRange = {
+    min: 0,
+    max: 60
+}
+
+const randomRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
 module.exports = {  
     GetTimeout,
+    RandomizePostTime,
     GetTimeToPost,
     GetSavedTemplate, 
     GetServerTemplate, 
@@ -37,7 +47,7 @@ module.exports = {
     GetSaveJSONName, 
     ReadSaveFile, 
     WriteSaveFile,
-    GetToken
+    GetToken,
 };
 
 function GetTimeout(posted)
@@ -48,11 +58,23 @@ function GetTimeout(posted)
         return noPostsTimeout;
 }
 
+function RandomizePostTime(currentDay)
+{
+    saved = ReadSaveFile();
+    saved.timeToPost = {
+        hour: randomRange(hourTimeRange.min, hourTimeRange.max),
+        min: randomRange(minRange.min, minRange.max),
+        day: currentDay
+    }
+    WriteSaveFile(saved);
+}
+
 function GetTimeToPost()
 {
+    saved = ReadSaveFile();
     return {
-        hour: hourToBeGreater,
-        min: minToBeGreater
+        hour: saved.timeToPost.hour,
+        min: saved.timeToPost.min
     }
 }
 

@@ -17,6 +17,12 @@ async function checkTime (client)
 
     const saved = global.ReadSaveFile();
 
+    if (saved.timeToPost.day != currentDay)
+    {
+        //Updates post time to a random range for the day
+        global.RandomizePostTime(currentDay);
+    }
+
     console.log("checking post time at " + hour + ":" + min);
 
     let shouldSave = false;

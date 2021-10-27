@@ -3,7 +3,7 @@
 require('dotenv').config();
 //.evn consists of
 //TOKEN=
-//TEST_TOKEN= TODO add this one
+//TEST_TOKEN=
 //INV_URL=
 //TEST=false
 
