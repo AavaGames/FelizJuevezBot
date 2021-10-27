@@ -14,6 +14,8 @@ module.exports = {
                 server.lastDayPosted = '';
                 global.WriteSaveFile(saved);
 
+                console.log("reset server post status of id = " + message.guild.id);
+                
                 global.Message(message.channel, 'Reset server post status.');
             }
         });

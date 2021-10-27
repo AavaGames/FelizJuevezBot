@@ -66,6 +66,7 @@ function RandomizePostTime(currentDay)
         min: randomRange(minRange.min, minRange.max),
         day: currentDay
     }
+    console.log("Randomized time for " + currentDay + " to " + saved.timeToPost.hour + ":" + saved.timeToPost.min);
     WriteSaveFile(saved);
 }
 

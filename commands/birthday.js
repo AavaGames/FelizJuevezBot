@@ -30,8 +30,13 @@ module.exports = {
             global.Message(message.channel, {
                  files: [ postPaths.birthdayImage ]
             });
+
+            console.log("sent happy birthday msg");
         }
         else
+        {
             global.Message(message.channel, "I can't find that person. I need the full username (User#0000) :(");
+            console.log("failed to send happy birthday msg");
+        }
     }
 }
