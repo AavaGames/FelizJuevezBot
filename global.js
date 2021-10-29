@@ -26,11 +26,11 @@ const postTimeout = 30;
 //Time range when to post, randomized each day
 const hourTimeRange = {
     min: 12,
-    max: 17
+    max: 14
 }
 const minRange = {
     min: 0,
-    max: 60
+    max: 59
 }
 
 //#endregion
